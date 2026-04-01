@@ -5,6 +5,8 @@ import duckcorp.duck.DuckType;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -55,8 +57,22 @@ public class Stock<T extends Duck> {
      * Attention à la signature de retour : elle doit conserver le type générique T.
      */
     public List<T> remove(DuckType type, int count) {
-        // TODO
-        throw new UnsupportedOperationException("TODO : Stock.remove()");
+        // Vérification préalable pour éviter de modifier le stock partiellement en cas d'erreur
+        if (count(type) < count) {
+            throw new IllegalStateException(
+                "Stock insuffisant : " + count(type) + " " + type + " disponible(s), " + count + " demandé(s)");
+        }
+        List<T> removed = new ArrayList<>();
+        // Passe unique avec Iterator pour pouvoir supprimer en cours de parcours (sinon impossible avec for-each)
+        Iterator<T> it = items.iterator();
+        while (it.hasNext() && removed.size() < count) {
+            T duck = it.next();
+            if (duck.getType() == type) {
+                removed.add(duck);
+                it.remove();
+            }
+        }
+        return removed;
     }
 
     /**
@@ -65,8 +81,11 @@ public class Stock<T extends Duck> {
      * @param type le type à compter
      */
     public int count(DuckType type) {
-        // TODO
-        throw new UnsupportedOperationException("TODO : Stock.count()");
+        int n = 0;
+        for (T duck : items) {
+            if (duck.getType() == type) n++;
+        }
+        return n;
     }
 
     /**
@@ -76,8 +95,11 @@ public class Stock<T extends Duck> {
      * Conseil : appelez isDefective() plutôt que de comparer le score manuellement.
      */
     public int countDefective() {
-        // TODO
-        throw new UnsupportedOperationException("TODO : Stock.countDefective()");
+        int n = 0;
+        for (T duck : items) {
+            if (duck.isDefective()) n++;
+        }
+        return n;
     }
 
     /**
@@ -88,7 +110,14 @@ public class Stock<T extends Duck> {
      * Tous les types doivent apparaître dans la map (avec 0 si absent).
      */
     public Map<DuckType, Integer> countByType() {
-        // TODO
-        throw new UnsupportedOperationException("TODO : Stock.countByType()");
+        // EnumMap garantit que tous les types sont présents dès l'initialisation
+        Map<DuckType, Integer> map = new EnumMap<>(DuckType.class);
+        for (DuckType t : DuckType.values()) {
+            map.put(t, 0);
+        }
+        for (T duck : items) {
+            map.merge(duck.getType(), 1, Integer::sum);
+        }
+        return map;
     }
 }

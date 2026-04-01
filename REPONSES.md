@@ -10,3 +10,6 @@ Une méthode `default` dans une interface ne peut pas accéder aux champs privé
 
 On choisit une interface quand on veut définir un contrat comportemental  avec les classes qui l'implémentent. On choisit une classe abstraite quand on veut partager du code et de l'état commun entre des classes d'une même famille, tout en forçant l'implémentation de certaines méthodes dans les sous-classes.
 
+## Question Ex4
+
+`Stock<Duck>`n'accepte qu'un stock dont le type paramétré est `Duck`. `Stock<? extends Duck>` accepte un `Stock<Duck>`, un `Stock<StandardDuck>`, un `Stock<MiniDuck>`, etc.
