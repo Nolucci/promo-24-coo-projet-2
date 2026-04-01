@@ -12,4 +12,8 @@ On choisit une interface quand on veut définir un contrat comportemental  avec 
 
 ## Question Ex4
 
-`Stock<Duck>`n'accepte qu'un stock dont le type paramétré est `Duck`. `Stock<? extends Duck>` accepte un `Stock<Duck>`, un `Stock<StandardDuck>`, un `Stock<MiniDuck>`, etc.
+`Stock<Duck>` n'accepte qu'un stock dont le type paramétré est `Duck`. `Stock<? extends Duck>` accepte un `Stock<Duck>`, un `Stock<StandardDuck>`, un `Stock<MiniDuck>`, etc.
+
+## Question Ex5
+
+`getMachines()` retourne `Collections.unmodifiableList(machines)` pour protéger la liste. Si on retournait la liste directement, n'importe quel code externe pourrait faire `factory.getMachines().add(new StandardPress())` sans payer. Par contre, la liste non modifiable ne protège pas les objets qui sont dedans.

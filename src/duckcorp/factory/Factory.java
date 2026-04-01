@@ -8,6 +8,7 @@ import duckcorp.stock.Stock;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -77,8 +78,12 @@ public class Factory {
      * @return true si l'achat a réussi, false si budget insuffisant
      */
     public boolean buyMachine(Machine machine) {
-        // TODO
-        throw new UnsupportedOperationException("TODO : Factory.buyMachine()");
+        if (budget < machine.getPurchaseCost()) {
+            return false;
+        }
+        budget -= machine.getPurchaseCost();
+        machines.add(machine);
+        return true;
     }
 
     /**
@@ -88,8 +93,12 @@ public class Factory {
      * @return true si la maintenance a réussi, false si budget insuffisant
      */
     public boolean maintainMachine(Machine machine) {
-        // TODO
-        throw new UnsupportedOperationException("TODO : Factory.maintainMachine()");
+        if (budget < machine.getMaintenanceCost()) {
+            return false;
+        }
+        budget -= machine.getMaintenanceCost();
+        machine.maintain();
+        return true;
     }
 
     /**
@@ -103,8 +112,16 @@ public class Factory {
      * @return la liste de tous les canards produits ce tour
      */
     public List<Duck> runProduction() {
-        // TODO
-        throw new UnsupportedOperationException("TODO : Factory.runProduction()");
+        List<Duck> produced = new ArrayList<>();
+        for (Machine machine : machines) {
+            for (int i = 0; i < machine.getCapacity(); i++) {
+                Duck duck = machine.produceDuck();
+                stock.add(duck);
+                produced.add(duck);
+            }
+        }
+        stats.recordProduction(produced);
+        return produced;
     }
 
     /**
@@ -122,13 +139,34 @@ public class Factory {
      * @return true si la commande a été honorée, false sinon
      */
     public boolean fulfillOrder(Order order) {
-        // TODO
-        throw new UnsupportedOperationException("TODO : Factory.fulfillOrder()");
+        if (!order.canBeFulfilled(stock)) {
+            return false;
+        }
+        // Retire les canards du stock ne garantit pas d'ordre 
+        List<Duck> shipped = stock.remove(order.getDuckType(), order.getQuantity());
+        shipped.sort(Comparator.comparingInt(Duck::getQualityScore));
+
+        double avgQuality = shipped.stream()
+                .mapToInt(Duck::getQualityScore)
+                .average()
+                .orElse(0);
+
+        budget += order.getTotalValue();
+
+        if (avgQuality >= 70) {
+            reputation = Math.min(100, reputation + 3);
+        } else if (avgQuality >= 50) {
+            reputation = Math.min(100, reputation + 1);
+        }
+
+        order.fulfill();
+        stats.recordSale(order);
+        return true;
     }
 
     // --- TODO (Bonus 1) ---
 
-    /**
+        /**
      * Fin de tour : dégrade toutes les machines.
      * Pour chaque machine en état critique après dégradation (needsMaintenance()),
      * pénalise la réputation de 5 points.
