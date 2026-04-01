@@ -9,7 +9,7 @@ package duckcorp.duck;
  *   - Implémentez les méthodes abstraites dans les sous-classes
  * @author Roussille Philippe <roussille@3il.fr>
  */
-public abstract class Duck {
+public abstract class Duck implements Qualifiable {
 
     private static int counter = 0;
 
@@ -39,17 +39,23 @@ public abstract class Duck {
 
     /**
      * Deux canards sont égaux si et seulement si ils ont le même identifiant.
-     * TODO : implémentez equals() en vous basant uniquement sur le champ id.
+     * @param o l'objet à comparer
+     * @return true si les deux canards ont le même id
      */
     @Override
     public boolean equals(Object o) {
-        throw new UnsupportedOperationException("TODO : Duck.equals()");
+        if (this == o) return true;
+        if (!(o instanceof Duck)) return false;
+        Duck other = (Duck) o;
+        return this.id.equals(other.id);
     }
 
-    /** TODO : implémentez hashCode() de façon cohérente avec equals(). */
+    /**
+     * @return le hashCode de l'identifiant
+     */
     @Override
     public int hashCode() {
-        throw new UnsupportedOperationException("TODO : Duck.hashCode()");
+        return id.hashCode();
     }
 
     // --- toString fourni ---

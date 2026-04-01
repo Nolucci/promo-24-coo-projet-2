@@ -14,10 +14,10 @@ public interface Qualifiable {
 
     /**
      * Retourne true si le score de qualité est strictement inférieur à 20.
-     * TODO : implémentez cette méthode default en vous appuyant sur getQualityScore().
+     * @return true si le canard est défectueux
      */
     default boolean isDefective() {
-        throw new UnsupportedOperationException("TODO : Qualifiable.isDefective()");
+        return getQualityScore() < 20;
     }
 
     /**
@@ -26,6 +26,10 @@ public interface Qualifiable {
      * TODO : implémentez cette méthode default.
      */
     default String getQualityLabel() {
-        throw new UnsupportedOperationException("TODO : Qualifiable.getQualityLabel()");
+        int score = getQualityScore();
+        if (score >= 80) return "Excellent";
+        if (score >= 50) return "Bon";
+        if (score >= 20) return "Médiocre";
+        return "Défectueux";
     }
 }
