@@ -142,7 +142,7 @@ public class Factory {
         if (!order.canBeFulfilled(stock)) {
             return false;
         }
-        // Retire les canards du stock ne garantit pas d'ordre 
+        // Retire les canards du stock ne garantit pas d'ordre
         List<Duck> shipped = stock.remove(order.getDuckType(), order.getQuantity());
         shipped.sort(Comparator.comparingInt(Duck::getQualityScore));
 
@@ -172,7 +172,11 @@ public class Factory {
      * pénalise la réputation de 5 points.
      */
     public void endTurn() {
-        // TODO
-        throw new UnsupportedOperationException("TODO : Factory.endTurn()");
+        for (Machine machine : machines) {
+            machine.degrade();
+            if (machine.needsMaintenance()) {
+                reputation = Math.max(0, reputation - 5);
+            }
+        }
     }
 }

@@ -60,19 +60,25 @@ public class ProductionStats {
      * Utilisez getOrDefault() ou merge() plutôt qu'un null-check manuel.
      * Réfléchissez à la signature du paramètre : doit-elle accepter
      * uniquement une List<Duck>, ou quelque chose de plus général ?
+     *
+     * @param ducks la liste des canards produits ce tour
      */
     public void recordProduction(List<Duck> ducks) {
-        // TODO
-        throw new UnsupportedOperationException("TODO : ProductionStats.recordProduction()");
+        for (Duck duck : ducks) {
+            produced.merge(duck.getType(), 1, Integer::sum);
+        }
     }
 
     /**
      * Enregistre la vente d'une commande honorée.
      * Met à jour sold, totalRevenue et totalOrders.
+     *
+     * @param order la commande honorée
      */
     public void recordSale(Order order) {
-        // TODO
-        throw new UnsupportedOperationException("TODO : ProductionStats.recordSale()");
+        sold.merge(order.getDuckType(), order.getQuantity(), Integer::sum);
+        totalRevenue += order.getTotalValue();
+        totalOrders++;
     }
 
     /**
@@ -80,8 +86,11 @@ public class ProductionStats {
      * Parcourez produced.values() avec une boucle.
      */
     public int getTotalProduced() {
-        // TODO
-        throw new UnsupportedOperationException("TODO : ProductionStats.getTotalProduced()");
+        int total = 0;
+        for (int n : produced.values()) {
+            total += n;
+        }
+        return total;
     }
 
     /**
@@ -90,7 +99,14 @@ public class ProductionStats {
      * Retourne null si rien n'a encore été produit.
      */
     public DuckType getMostProduced() {
-        // TODO
-        throw new UnsupportedOperationException("TODO : ProductionStats.getMostProduced()");
+        DuckType maxType = null;
+        int maxCount = 0;
+        for (Map.Entry<DuckType, Integer> entry : produced.entrySet()) {
+            if (entry.getValue() > maxCount) {
+                maxCount = entry.getValue();
+                maxType = entry.getKey();
+            }
+        }
+        return maxType;
     }
 }
